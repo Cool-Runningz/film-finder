@@ -38,7 +38,8 @@ export default function MovieGrid() {
   const [page, setPage] = useState(1)
 
     const { data: genresResponse, error: genresError, isLoading: genresLoading } = useMovieApi<GenresResponse>('/genres/movies') // Fetch genres
-    const { data: moviesResponse, error: moviesError, isLoading: moviesLoading } = useMovieApi<MoviesResponse>(`/movies?page=${page}&limit=${ITEMS_PER_PAGE}`) // Fetch movies
+    const genreParam = selectedGenre ? `&genre=${selectedGenre}` : ''
+    const { data: moviesResponse, error: moviesError, isLoading: moviesLoading } = useMovieApi<MoviesResponse>(`/movies?page=${page}&limit=${ITEMS_PER_PAGE}${genreParam}`) // Fetch movies
 
     const genres = genresResponse?.data
     const movies = moviesResponse?.data
@@ -62,10 +63,10 @@ export default function MovieGrid() {
 
                 <Field>
                   <Label>Filter by Genre</Label>
-                <Select className='max-w-fit' value={selectedGenre} onChange={(e) => setSelectedGenre(e.target.value)}>
+                <Select className='max-w-fit' value={selectedGenre} onChange={(e) => { setSelectedGenre(e.target.value); setPage(1); }}>
                   <option value="">All Genres</option>
-                  {genres?.data?.map((genre) => (
-                    <option key={genre.id} value={genre.id}>
+                  {genres?.map((genre) => (
+                    <option key={genre.id} value={genre.title}>
                       {genre.title}
                     </option>
                   ))}
