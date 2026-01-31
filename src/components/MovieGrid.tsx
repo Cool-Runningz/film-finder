@@ -3,9 +3,11 @@
 import { useState } from 'react'
 import { Select } from '@/catalyst/Select'
 import { Field, Label } from '@/catalyst/Fieldset'
+import { Pagination, PaginationPrevious, PaginationNext, PaginationList, PaginationPage, PaginationGap } from '@/catalyst/Pagination'
 
 import { useMovieApi } from '@/hooks/useMovieApi'
-
+import { ITEMS_PER_PAGE } from '@/utils/constants'
+import { getPageNumbers } from '@/utils/helpers'
 import placedholderImage from '@/images/unsplash-movie-image-placeholder.jpg'
 
 interface Genre {
@@ -27,15 +29,20 @@ interface Movie {
 
 interface MoviesResponse {
   data: Movie[]
+  total: number
+  totalPages: number
 }
 
 export default function MovieGrid() {
   const [selectedGenre, setSelectedGenre] = useState<string>('')
+  const [page, setPage] = useState(1)
+
     const { data: genresResponse, error: genresError, isLoading: genresLoading } = useMovieApi<GenresResponse>('/genres/movies') // Fetch genres
-    const { data: moviesResponse, error: moviesError, isLoading: moviesLoading } = useMovieApi<MoviesResponse>('/movies') // Fetch movies
+    const { data: moviesResponse, error: moviesError, isLoading: moviesLoading } = useMovieApi<MoviesResponse>(`/movies?page=${page}&limit=${ITEMS_PER_PAGE}`) // Fetch movies
 
     const genres = genresResponse?.data
     const movies = moviesResponse?.data
+    const totalPages = moviesResponse?.totalPages || 1
 
   return (
     <div className="bg-gray-50">
@@ -87,6 +94,29 @@ export default function MovieGrid() {
                   </article>
                 ))}
               </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <Pagination className="mt-8">
+                  <PaginationPrevious onClick={() => page > 1 && setPage(page - 1)} />
+                  <PaginationList>
+                    {getPageNumbers(page, totalPages).map((item, index) =>
+                      item === 'gap' ? (
+                        <PaginationGap key={`gap-${index}`} />
+                      ) : (
+                        <PaginationPage
+                          key={item}
+                          current={item === page}
+                          onClick={() => setPage(item)}
+                        >
+                          {item}
+                        </PaginationPage>
+                      )
+                    )}
+                  </PaginationList>
+                  <PaginationNext onClick={() => page < totalPages && setPage(page + 1)} />
+                </Pagination>
+              )}
             </section>  
           </div>
         </main>
