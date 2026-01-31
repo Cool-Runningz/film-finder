@@ -4,20 +4,18 @@ import { useState } from 'react'
 import { Select } from '@/catalyst/Select'
 import { Field, Label } from '@/catalyst/Fieldset'
 
-const filters = [
-  {
-    id: 'genres',
-    name: 'Genres',
-    options: [
-      { value: 'tees', label: 'Tees' },
-      { value: 'crewnecks', label: 'Crewnecks' },
-      { value: 'hats', label: 'Hats' },
-      { value: 'bundles', label: 'Bundles' },
-      { value: 'carry', label: 'Carry' },
-      { value: 'objects', label: 'Objects' },
-    ]
+import { useMovieApi } from '@/hooks/useMovieApi'
+
+interface Genre {
+  id: string
+  title: string
+  movies: { id: string }[]
 }
-]
+
+interface GenresResponse {
+  data: Genre[]
+}
+
 const products1 = [
   {
     id: 1,
@@ -50,6 +48,7 @@ const products1 = [
 
 export default function MovieGrid() {
   const [selectedGenre, setSelectedGenre] = useState<string>('')
+    const { data: genres, error, isLoading } = useMovieApi<GenresResponse>('/genres/movies') // Fetch genres
 
   return (
     <div className="bg-gray-50">
@@ -71,9 +70,9 @@ export default function MovieGrid() {
                   <Label>Filter by Genre</Label>
                 <Select className='max-w-fit' value={selectedGenre} onChange={(e) => setSelectedGenre(e.target.value)}>
                   <option value="">All Genres</option>
-                  {filters[0].options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
+                  {genres?.data?.map((genre) => (
+                    <option key={genre.id} value={genre.id}>
+                      {genre.title}
                     </option>
                   ))}
                 </Select>
