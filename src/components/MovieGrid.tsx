@@ -6,6 +6,8 @@ import { Field, Label } from '@/catalyst/Fieldset'
 
 import { useMovieApi } from '@/hooks/useMovieApi'
 
+import placedholderImage from '@/images/unsplash-movie-image-placeholder.jpg'
+
 interface Genre {
   id: string
   title: string
@@ -16,39 +18,24 @@ interface GenresResponse {
   data: Genre[]
 }
 
-const products1 = [
-  {
-    id: 1,
-    name: 'Focus Paper Refill',
-    href: '#',
-    price: '$13',
-    description: '3 sizes available',
-    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-01-image-card-01.jpg',
-    imageAlt: 'Person using a pen to cross a task off a productivity paper card.',
-  },
-  {
-    id: 2,
-    name: 'Focus Card Holder',
-    href: '#',
-    price: '$64',
-    description: 'Walnut',
-    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-01-image-card-02.jpg',
-    imageAlt: 'Paper card sitting upright in walnut card holder on desk.',
-  },
-  {
-    id: 3,
-    name: 'Focus Carry Pouch',
-    href: '#',
-    price: '$32',
-    description: 'Heather Gray',
-    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-01-image-card-03.jpg',
-    imageAlt: 'Textured gray felt pouch for paper cards with snap button flap and elastic pen holder loop.',
-  }
-]
+interface Movie {
+  id: string
+  title: string
+  posterUrl?: string
+  rating?: string
+}
+
+interface MoviesResponse {
+  data: Movie[]
+}
 
 export default function MovieGrid() {
   const [selectedGenre, setSelectedGenre] = useState<string>('')
-    const { data: genres, error, isLoading } = useMovieApi<GenresResponse>('/genres/movies') // Fetch genres
+    const { data: genresResponse, error: genresError, isLoading: genresLoading } = useMovieApi<GenresResponse>('/genres/movies') // Fetch genres
+    const { data: moviesResponse, error: moviesError, isLoading: moviesLoading } = useMovieApi<MoviesResponse>('/movies') // Fetch movies
+
+    const genres = genresResponse?.data
+    const movies = moviesResponse?.data
 
   return (
     <div className="bg-gray-50">
@@ -82,23 +69,22 @@ export default function MovieGrid() {
             {/* Product grid */}
             <section aria-labelledby="products-heading" className="mt-8 pb-24">
               <h2 id="products-heading" className="sr-only">
-                Products
+                Movies
               </h2>
 
               <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-                {products1.map((product) => (
-                  <a key={product.id} href={product.href} className="group">
+                {movies?.map((movie) => (
+                  <article key={movie.id} className="group">
                     <img
-                      alt={product.imageAlt}
-                      src={product.imageSrc}
+                      alt={movie.title}
+                      src={movie.posterUrl || placedholderImage}
                       className="aspect-square w-full rounded-lg object-cover group-hover:opacity-75 sm:aspect-[2/3]"
                     />
                     <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
-                      <h3>{product.name}</h3>
-                      <p>{product.price}</p>
+                      <h3>{movie.title}</h3>
                     </div>
-                    <p className="mt-1 text-sm italic text-gray-500">{product.description}</p>
-                  </a>
+                    <p className="mt-1 text-sm italic text-gray-500">{movie.rating || 'No rating'}</p>
+                  </article>
                 ))}
               </div>
             </section>  
