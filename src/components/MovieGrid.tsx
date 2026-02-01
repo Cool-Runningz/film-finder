@@ -10,6 +10,11 @@ import { ITEMS_PER_PAGE } from '@/utils/constants'
 import { getPageNumbers } from '@/utils/helpers'
 import placedholderImage from '@/images/unsplash-movie-image-placeholder.jpg'
 
+import SearchInput from './SearchInput'
+import SkeletonLoader from './SkeletonLoader'
+
+//TODO: Extract types to a separate file
+//TODO: Extract other components (like MovieCard) to separate files
 interface Genre {
   id: string
   title: string
@@ -36,10 +41,12 @@ interface MoviesResponse {
 export default function MovieGrid() {
   const [selectedGenre, setSelectedGenre] = useState<string>('')
   const [page, setPage] = useState(1)
+  const [search, setSearch] = useState<string>('')
 
     const { data: genresResponse, error: genresError, isLoading: genresLoading } = useMovieApi<GenresResponse>('/genres/movies') // Fetch genres
     const genreParam = selectedGenre ? `&genre=${selectedGenre}` : ''
-    const { data: moviesResponse, error: moviesError, isLoading: moviesLoading } = useMovieApi<MoviesResponse>(`/movies?page=${page}&limit=${ITEMS_PER_PAGE}${genreParam}`) // Fetch movies
+    const searchParam = search ? `&search=${search}` : ''
+    const { data: moviesResponse, error: moviesError, isLoading: moviesLoading } = useMovieApi<MoviesResponse>(`/movies?page=${page}&limit=${ITEMS_PER_PAGE}${genreParam}${searchParam}`) // Fetch movies
 
     const genres = genresResponse?.data
     const movies = moviesResponse?.data
@@ -48,7 +55,6 @@ export default function MovieGrid() {
   return (
     <div className="bg-gray-50">
       <div> 
-
         <main>
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
             <div className="py-16 text-center">
@@ -60,7 +66,7 @@ export default function MovieGrid() {
               <h2 id="filter-heading" className="sr-only">
                 Product filters
               </h2>
-
+              <div className='flex justify-between items-center'>
                 <Field>
                   <Label>Filter by Genre</Label>
                 <Select className='max-w-fit' value={selectedGenre} onChange={(e) => { setSelectedGenre(e.target.value); setPage(1); }}>
@@ -72,6 +78,16 @@ export default function MovieGrid() {
                   ))}
                 </Select>
                 </Field>
+
+                  <div className=''>
+                     {search.length > 0 && (
+                     <span className="text-sm text-gray-700 mb-3">
+                {movies?.length ? `${movies.length} movies found` : 'No movies found'}
+              </span>
+                     )}
+                <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} />
+</div>
+                </div>
             </section>
 
             {/* Product grid */}
@@ -81,19 +97,21 @@ export default function MovieGrid() {
               </h2>
 
               <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-                {movies?.map((movie) => (
-                  <article key={movie.id} className="group">
-                    <img
-                      alt={movie.title}
-                      src={movie.posterUrl || placedholderImage}
-                      className="aspect-square w-full rounded-lg object-cover group-hover:opacity-75 sm:aspect-[2/3]"
-                    />
-                    <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
-                      <h3>{movie.title}</h3>
-                    </div>
-                    <p className="mt-1 text-sm italic text-gray-500">{movie.rating || 'No rating'}</p>
-                  </article>
-                ))}
+                {moviesLoading
+                  ? Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => <SkeletonLoader key={i} />)
+                  : movies?.map((movie) => (
+                      <article key={movie.id} className="group">
+                        <img
+                          alt={movie.title}
+                          src={movie.posterUrl || placedholderImage}
+                          className="aspect-square w-full rounded-lg object-cover group-hover:opacity-75 sm:aspect-[2/3]"
+                        />
+                        <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
+                          <h3>{movie.title}</h3>
+                        </div>
+                        <p className="mt-1 text-sm italic text-gray-500">{movie.rating || 'No rating'}</p>
+                      </article>
+                    ))}
               </div>
 
               {/* Pagination */}
