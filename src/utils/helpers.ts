@@ -13,3 +13,19 @@ export function getPageNumbers(current: number, total: number) {
   }
   return pages;
 }
+
+export function parseDuration(duration: string): string {
+  const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
+  if (!match) return duration
+
+  const hours = match[1] ? `${match[1]}h ` : ''
+  const minutes = match[2] ? `${match[2]}m` : ''
+  const seconds = match[3] ? ` ${match[3]}s` : ''
+
+  return `${hours}${minutes}${seconds}`.trim()
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+}

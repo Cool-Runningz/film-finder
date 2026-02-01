@@ -4,53 +4,39 @@ import { useState } from 'react'
 import { Select } from '@/catalyst/Select'
 import { Field, Label } from '@/catalyst/Fieldset'
 import { Pagination, PaginationPrevious, PaginationNext, PaginationList, PaginationPage, PaginationGap } from '@/catalyst/Pagination'
+import { Button } from '@/catalyst/Button' 
+import { StarIcon } from '@heroicons/react/16/solid'
+import MovieDetailsModal from './MovieDetailsModal'
 
 import { useMovieApi } from '@/hooks/useMovieApi'
 import { ITEMS_PER_PAGE } from '@/utils/constants'
 import { getPageNumbers } from '@/utils/helpers'
 import placedholderImage from '@/images/unsplash-movie-image-placeholder.jpg'
+import type { Movie, MoviesResponse, GenresResponse } from '@/types/movie'
 
 import SearchInput from './SearchInput'
 import SkeletonLoader from './SkeletonLoader'
 
-//TODO: Extract types to a separate file
 //TODO: Extract other components (like MovieCard) to separate files
-interface Genre {
-  id: string
-  title: string
-  movies: { id: string }[]
-}
-
-interface GenresResponse {
-  data: Genre[]
-}
-
-interface Movie {
-  id: string
-  title: string
-  posterUrl?: string
-  rating?: string
-}
-
-interface MoviesResponse {
-  data: Movie[]
-  total: number
-  totalPages: number
-}
 
 export default function MovieGrid() {
   const [selectedGenre, setSelectedGenre] = useState<string>('')
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState<string>('')
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null)
 
-    const { data: genresResponse, error: genresError, isLoading: genresLoading } = useMovieApi<GenresResponse>('/genres/movies') // Fetch genres
-    const genreParam = selectedGenre ? `&genre=${selectedGenre}` : ''
-    const searchParam = search ? `&search=${search}` : ''
-    const { data: moviesResponse, error: moviesError, isLoading: moviesLoading } = useMovieApi<MoviesResponse>(`/movies?page=${page}&limit=${ITEMS_PER_PAGE}${genreParam}${searchParam}`) // Fetch movies
+  const { data: genresResponse, error: genresError, isLoading: genresLoading } = useMovieApi<GenresResponse>('/genres/movies') // Fetch genres
+  const genreParam = selectedGenre ? `&genre=${selectedGenre}` : ''
+  const searchParam = search ? `&search=${search}` : ''
+  const { data: moviesResponse, error: moviesError, isLoading: moviesLoading } = useMovieApi<MoviesResponse>(`/movies?page=${page}&limit=${ITEMS_PER_PAGE}${genreParam}${searchParam}`) // Fetch movies
 
-    const genres = genresResponse?.data
-    const movies = moviesResponse?.data
-    const totalPages = moviesResponse?.totalPages || 1
+  // Fetch movie details when selectedMovie changes
+  const { data: movieDetails, error: movieDetailsError, isLoading: movieDetailsLoading } = useMovieApi<Movie>(selectedMovie ? `/movies/${selectedMovie.id}` : null)
+
+  const genres = genresResponse?.data
+  const movies = moviesResponse?.data
+  const totalPages = moviesResponse?.totalPages || 1
 
   return (
     <div className="bg-gray-50">
@@ -110,6 +96,19 @@ export default function MovieGrid() {
                           <h3>{movie.title}</h3>
                         </div>
                         <p className="mt-1 text-sm italic text-gray-500">{movie.rating || 'No rating'}</p>
+                        
+                        {/* Buttons for View and Favorite */}
+                        <div className="mt-2 flex justify-between space-x-2">
+                          <Button className='w-full cursor-pointer' onClick={() => { setSelectedMovie(movie); setIsOpen(true); }}>
+                            View Details
+                          </Button>
+                          <Button className='w-full cursor-pointer' outline onClick={() => {/* Handle favorite action */}}>
+                            <span className="flex items-center">
+                              <StarIcon className="w-4 h-4 mr-1" />
+                              Favorite
+                            </span>
+                          </Button>
+                        </div>
                       </article>
                     ))}
               </div>
@@ -140,6 +139,7 @@ export default function MovieGrid() {
           </div>
         </main>
       </div>
+      <MovieDetailsModal isOpen={isOpen} setIsOpen={setIsOpen} movie={movieDetails} isLoading={movieDetailsLoading} />
     </div>
   )
 }
