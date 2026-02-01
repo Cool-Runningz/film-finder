@@ -14,10 +14,17 @@ export function PaginationPrevious({
   onClick,
   className,
   children = 'Previous',
-}: React.PropsWithChildren<{ onClick?: () => void; className?: string }>) {
+  disabled = false,
+}: React.PropsWithChildren<{ onClick?: () => void; className?: string; disabled?: boolean }>) {
   return (
     <span className={clsx(className, 'grow basis-0')}>
-      <Button onClick={onClick} plain aria-label="Previous page">
+      <Button
+        onClick={onClick}
+        plain
+        aria-label="Previous page"
+        disabled={disabled}
+        className={disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
+      >
         <svg className="stroke-current" data-slot="icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path
             d="M2.75 8H13.25M2.75 8L5.25 5.5M2.75 8L5.25 10.5"
@@ -36,10 +43,17 @@ export function PaginationNext({
   onClick,
   className,
   children = 'Next',
-}: React.PropsWithChildren<{ onClick?: () => void; className?: string }>) {
+  disabled = false,
+}: React.PropsWithChildren<{ onClick?: () => void; className?: string; disabled?: boolean }>) {
   return (
     <span className={clsx(className, 'flex grow basis-0 justify-end')}>
-      <Button onClick={onClick} plain aria-label="Next page">
+      <Button
+        onClick={onClick}
+        plain
+        aria-label="Next page"
+        disabled={disabled}
+        className={disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
+      >
         {children}
         <svg className="stroke-current" data-slot="icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path
@@ -72,7 +86,7 @@ export function PaginationPage({
       aria-current={current ? 'page' : undefined}
       className={clsx(
         className,
-        'min-w-9 before:absolute before:-inset-px before:rounded-lg',
+        'min-w-9 before:absolute before:-inset-px before:rounded-lg cursor-pointer',
         current && 'before:bg-zinc-950/5 dark:before:bg-white/10'
       )}
     >

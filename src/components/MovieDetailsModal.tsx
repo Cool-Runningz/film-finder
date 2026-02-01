@@ -7,7 +7,7 @@ import { parseDuration, formatDate } from '@/utils/helpers'
 interface MovieDetailsModalProps {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
-  movie: Movie | null
+  movie: Movie | null | undefined
   isLoading: boolean
 }
 

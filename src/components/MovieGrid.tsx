@@ -5,6 +5,7 @@ import { Select } from '@/catalyst/Select'
 import { Field, Label } from '@/catalyst/Fieldset'
 import { Pagination, PaginationPrevious, PaginationNext, PaginationList, PaginationPage, PaginationGap } from '@/catalyst/Pagination'
 import { Button } from '@/catalyst/Button' 
+import { Text } from '@/catalyst/Text'
 import { StarIcon } from '@heroicons/react/16/solid'
 import MovieDetailsModal from './MovieDetailsModal'
 
@@ -65,11 +66,11 @@ export default function MovieGrid() {
                 </Select>
                 </Field>
 
-                  <div className=''>
+                  <div className='flex flex-col gap-y-3'>
                      {search.length > 0 && (
-                     <span className="text-sm text-gray-700 mb-3">
-                {movies?.length ? `${movies.length} movies found` : 'No movies found'}
-              </span>
+                     <Text>
+                {movies?.length ? `${movies.length} results (page ${page} of ${totalPages})` : 'No movies found'}
+              </Text>
                      )}
                 <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} />
 </div>
@@ -116,7 +117,7 @@ export default function MovieGrid() {
               {/* Pagination */}
               {totalPages > 1 && (
                 <Pagination className="mt-8">
-                  <PaginationPrevious onClick={() => page > 1 && setPage(page - 1)} />
+                  <PaginationPrevious onClick={() => page > 1 && setPage(page - 1)} disabled={page === 1} />
                   <PaginationList>
                     {getPageNumbers(page, totalPages).map((item, index) =>
                       item === 'gap' ? (
@@ -132,7 +133,7 @@ export default function MovieGrid() {
                       )
                     )}
                   </PaginationList>
-                  <PaginationNext onClick={() => page < totalPages && setPage(page + 1)} />
+                  <PaginationNext onClick={() => page < totalPages && setPage(page + 1)} disabled={page === totalPages} />
                 </Pagination>
               )}
             </section>  
