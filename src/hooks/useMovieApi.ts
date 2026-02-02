@@ -15,9 +15,9 @@ const fetcher = async (url: string) => {
   return res.json();
 };
 
-export function useMovieApi<T>(endpoint: string) {
+export function useMovieApi<T>(endpoint: string | null) {
   const { data, error, isLoading } = useSWR<T>(
-    `${MOVIE_API_BASE_URL}${endpoint}`,
+    endpoint ? `${MOVIE_API_BASE_URL}${endpoint}` : null,
     fetcher
   );
   return { data, error, isLoading };

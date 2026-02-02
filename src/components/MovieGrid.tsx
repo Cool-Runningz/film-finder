@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useQueryState, parseAsString, parseAsInteger, debounce } from 'nuqs'
 import { Text } from '@/catalyst/Text'
 import MovieDetailsModal from './MovieDetailsModal'
 import MovieCard from './MovieCard'
@@ -15,19 +16,21 @@ import SkeletonLoader from './SkeletonLoader'
 import GenreFilter from './GenreFilter'
 
 export default function MovieGrid() {
-  const [selectedGenre, setSelectedGenre] = useState<string>('')
-  const [page, setPage] = useState(1)
-  const [search, setSearch] = useState<string>('')
+  // URL state management with nuqs
+  const [search, setSearch] = useQueryState('search', parseAsString.withDefault('').withOptions({ clearOnDefault: true}))
+  const [selectedGenre, setSelectedGenre] = useQueryState('genre', parseAsString.withDefault('').withOptions({ clearOnDefault: true }))
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1).withOptions({ clearOnDefault: true }))
+  
+  // Local React state
   const [isOpen, setIsOpen] = useState(false)
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null)
 
+  //Data fetching
   const { data: genresResponse } = useMovieApi<GenresResponse>('/genres/movies') // Fetch genres
   const genreParam = selectedGenre ? `&genre=${selectedGenre}` : ''
   const searchParam = search ? `&search=${search}` : ''
   const { data: moviesResponse, isLoading: moviesLoading } = useMovieApi<MoviesResponse>(`/movies?page=${page}&limit=${ITEMS_PER_PAGE}${genreParam}${searchParam}`) // Fetch movies
-
-  // Fetch movie details when selectedMovie changes
-  const { data: movieDetails, isLoading: movieDetailsLoading } = useMovieApi<Movie>(selectedMovie ? `/movies/${selectedMovie.id}` : null)
+  const { data: movieDetails, isLoading: movieDetailsLoading } = useMovieApi<Movie>(selectedMovie ? `/movies/${selectedMovie.id}` : null) // Fetch movie details when selectedMovie changes
 
   const handleViewDetails = (movie: Movie) => {
     setSelectedMovie(movie)
@@ -58,7 +61,10 @@ export default function MovieGrid() {
                 Product filters
               </h2>
               <div className='flex justify-between items-center'>
-                <GenreFilter genres={genres} selectedGenre={selectedGenre} onGenreChange={(value: string) => { setSelectedGenre(value); setPage(1); }} />
+                <GenreFilter genres={genres} selectedGenre={selectedGenre} onGenreChange={(value: string) => { 
+                  setSelectedGenre(value); 
+                  setPage(1); 
+                }} />
 
                   <div className='flex flex-col gap-y-3'>
                      {search.length > 0 && (
@@ -66,7 +72,13 @@ export default function MovieGrid() {
                 {movies?.length ? `${movies.length} results (page ${page} of ${totalPages})` : 'No movies found'}
               </Text>
                      )}
-                <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} />
+                <SearchInput value={search} onChange={(value) => { 
+                   setSearch(value, {
+          // Send immediate update if resetting, otherwise debounce at 500ms
+          limitUrlUpdates: value === '' ? undefined : debounce(300)
+        })
+                  setPage(1); 
+                }} />
 </div>
                 </div>
             </section>
