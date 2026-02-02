@@ -95,7 +95,7 @@ export default function MovieGrid() {
                     value={search}
                     onChange={(value) => {
                       setSearch(value, {
-                        // Send immediate update if resetting, otherwise debounce at 500ms
+                        // Send immediate update if resetting, otherwise debounce
                         limitUrlUpdates:
                           value === '' ? undefined : debounce(300),
                       })

@@ -18,7 +18,7 @@ export default function MovieCard({ movie, onViewDetails }: MovieCardProps) {
       <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
         <h3>{movie.title}</h3>
       </div>
-      <p className="mt-1 text-sm italic text-gray-500">
+      <p className="mt-1 mb-2 text-sm italic text-gray-500">
         {movie.rating || 'No rating'}
       </p>
       <Button

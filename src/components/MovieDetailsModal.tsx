@@ -8,6 +8,7 @@ import { Button } from '@/catalyst/Button'
 import { Text, Strong } from '@/catalyst/Text'
 import type { Movie } from '@/types/movie'
 import { parseDuration, formatDate } from '@/utils/helpers'
+import placeholderImage from '@/images/unsplash-movie-image-placeholder.jpg'
 
 interface MovieDetailsModalProps {
   isOpen: boolean
@@ -42,7 +43,7 @@ export default function MovieDetailsModal({
       <DialogBody>
         <div className="flex flex-col md:flex-row gap-4">
           <img
-            src={movie.posterUrl}
+            src={movie.posterUrl || placeholderImage}
             alt={movie.title}
             className="w-full md:w-1/3 rounded-lg object-cover"
           />
