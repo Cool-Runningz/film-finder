@@ -50,7 +50,7 @@ export default function MovieDetailsModal({ isOpen, setIsOpen, movie, isLoading 
         </div>
       </DialogBody>
       <DialogActions>
-        <Button onClick={() => setIsOpen(false)}>Close</Button>
+        <Button className='cursor-pointer' onClick={() => setIsOpen(false)}>Close</Button>
       </DialogActions>
     </Dialog>
   )

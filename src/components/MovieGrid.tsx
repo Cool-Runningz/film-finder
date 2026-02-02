@@ -37,11 +37,6 @@ export default function MovieGrid() {
     setIsOpen(true)
   }
 
-  const handleFavorite = (movie: Movie) => {
-    // Handle favorite action - placeholder for future implementation
-    console.log('Favorited movie:', movie.title)
-  }
-
   const genres = genresResponse?.data
   const movies = moviesResponse?.data
   const totalPages = moviesResponse?.totalPages || 1
@@ -97,7 +92,6 @@ export default function MovieGrid() {
                         key={movie.id}
                         movie={movie}
                         onViewDetails={handleViewDetails}
-                        onFavorite={handleFavorite}
                       />
                     ))}
               </div>
