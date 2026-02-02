@@ -1,4 +1,3 @@
-
 import { Button } from '@/catalyst/Button'
 import placeholderImage from '@/images/unsplash-movie-image-placeholder.jpg'
 import type { Movie } from '@/types/movie'
@@ -8,10 +7,7 @@ interface MovieCardProps {
   onViewDetails?: (movie: Movie) => void
 }
 
-export default function MovieCard({
-  movie,
-  onViewDetails,
-}: MovieCardProps) {
+export default function MovieCard({ movie, onViewDetails }: MovieCardProps) {
   return (
     <article className="group">
       <img
@@ -22,10 +18,15 @@ export default function MovieCard({
       <div className="mt-4 flex items-center justify-between text-base font-medium text-gray-900">
         <h3>{movie.title}</h3>
       </div>
-      <p className="mt-1 text-sm italic text-gray-500">{movie.rating || 'No rating'}</p>
-          <Button className="w-full cursor-pointer" onClick={() =>  onViewDetails?.(movie)}>
-            View Details
-          </Button>
+      <p className="mt-1 text-sm italic text-gray-500">
+        {movie.rating || 'No rating'}
+      </p>
+      <Button
+        className="w-full cursor-pointer"
+        onClick={() => onViewDetails?.(movie)}
+      >
+        View Details
+      </Button>
     </article>
   )
 }

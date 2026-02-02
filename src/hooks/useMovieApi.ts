@@ -1,24 +1,24 @@
-import useSWR from 'swr';
-import { MOVIE_API_BASE_URL } from '@/utils/constants';
+import useSWR from 'swr'
+import { MOVIE_API_BASE_URL } from '@/utils/constants'
 
 const fetcher = async (url: string) => {
   const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${import.meta.env.VITE_AUTH_TOKEN}`,
     },
-  });
+  })
 
   if (!res.ok) {
-    throw new Error('API error');
+    throw new Error('API error')
   }
 
-  return res.json();
-};
+  return res.json()
+}
 
 export function useMovieApi<T>(endpoint: string | null) {
   const { data, error, isLoading } = useSWR<T>(
     endpoint ? `${MOVIE_API_BASE_URL}${endpoint}` : null,
-    fetcher
-  );
-  return { data, error, isLoading };
+    fetcher,
+  )
+  return { data, error, isLoading }
 }

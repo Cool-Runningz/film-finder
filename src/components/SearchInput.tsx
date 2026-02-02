@@ -8,13 +8,13 @@ interface SearchInputProps {
 
 export default function SearchInput({ value, onChange }: SearchInputProps) {
   return (
-    <InputGroup >
+    <InputGroup>
       <MagnifyingGlassIcon />
-      <Input 
-        className='min-w-3xs' 
-        name="search" 
-        placeholder="Search&hellip;" 
-        aria-label="Search" 
+      <Input
+        className="min-w-3xs"
+        name="search"
+        placeholder="Search&hellip;"
+        aria-label="Search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />

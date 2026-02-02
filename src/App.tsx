@@ -1,10 +1,7 @@
 import MovieGrid from './components/MovieGrid'
 
 function App() {
-
-  return (
-      <MovieGrid />
-  )
+  return <MovieGrid />
 }
 
 export default App
